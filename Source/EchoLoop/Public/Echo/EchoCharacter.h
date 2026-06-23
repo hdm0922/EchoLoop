@@ -17,12 +17,10 @@ public:
 
 	void CopyAppearanceFromCharacter(const ACharacter* SourceCharacter);
 
+	void DoMove(const struct FEchoRecordFrame& InEchoRecordFrame);
+
 protected:
 
 	virtual void BeginPlay() override;
-
-private:
-
-
-
+	
 };

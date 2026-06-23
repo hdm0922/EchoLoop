@@ -1,9 +1,10 @@
 
+#include "EchoLoopCharacter.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 
 #include "EchoLoop.h"
-#include "EchoLoopCharacter.h"
 #include "Echo/EchoRecordComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
@@ -62,11 +63,14 @@ void AEchoLoopCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started,   this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AEchoLoopCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AEchoLoopCharacter::StopMove);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Canceled,  this, &AEchoLoopCharacter::StopMove);
+
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AEchoLoopCharacter::Look);
 
 		// Looking
@@ -138,4 +142,11 @@ void AEchoLoopCharacter::DoJumpEnd()
 	UE_LOG(LogTemp, Warning, TEXT("Jump End"));
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void AEchoLoopCharacter::StopMove(const FInputActionValue& Value)
+{
+	this->MovementVector = FVector2D::ZeroVector;
+
+	return;
 }

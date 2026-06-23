@@ -101,6 +101,8 @@ public:
 
 private:
 
+	void StopMove(const FInputActionValue& Value);
+
 	FVector2D MovementVector = FVector2D::ZeroVector;
 };
 

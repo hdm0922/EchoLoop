@@ -1,5 +1,8 @@
 
+#include "Loop/EchoLoopSubsystem.h"
+
 #include "Echo/EchoRecordComponent.h"
+#include "Echo/EchoReplayComponent.h"
 #include "Echo/EchoCharacter.h"
 #include "EchoLoopCharacter.h"
 #include "EchoLoopUtils.h"
@@ -10,7 +13,6 @@
 
 #include "Kismet/GameplayStatics.h"
 
-#include "Loop/EchoLoopSubsystem.h"
 #include "Loop/EchoLoopConstants.h"
 
 #include "TimerManager.h"
@@ -118,10 +120,25 @@ void UEchoLoopSubsystem::ResetEntityStatus()
 	AEchoLoopCharacter* PlayerCharacter = EchoLoopUtils::GetPlayerCharacter(this->GetWorld());
 	this->ResetCharacterStatus(PlayerCharacter);
 
+	if (UEchoRecordComponent* EchoRecordComponent = this->EchoRecorder.Get())
+	{
+		EchoRecordComponent->StartRecord();
+	}
+
+
+
 	// Reset Status : Echo
 	for (TWeakObjectPtr<AEchoCharacter> EchoCharacter : this->EchoCharacterArray)
 	{
-		this->ResetCharacterStatus(EchoCharacter.Get());
+		AEchoCharacter* Echo = EchoCharacter.Get();
+		if (!IsValid(Echo)) continue;
+
+		this->ResetCharacterStatus(Echo);
+
+		UEchoReplayComponent* ReplayComponent = Echo->FindComponentByClass<UEchoReplayComponent>();
+		if (!IsValid(ReplayComponent)) continue;
+
+		ReplayComponent->StartReplay();
 	}
 
 	return;
@@ -132,24 +149,27 @@ void UEchoLoopSubsystem::SpawnEchoCharacter()
 
 	AEchoCharacter* EchoCharacter = this->GetWorld()->SpawnActor<AEchoCharacter>(AEchoCharacter::StaticClass(), FTransform());
 	
-	if (IsValid(EchoCharacter))
-	{
-		AEchoLoopCharacter* PlayerCharacter = EchoLoopUtils::GetPlayerCharacter(this->GetWorld());
-		EchoCharacter->CopyAppearanceFromCharacter(PlayerCharacter);
+	check(EchoCharacter);
 
-		this->EchoCharacterArray.Add(EchoCharacter);
+	// Initialize : Echo Replay Component
+	if (UEchoReplayComponent* ReplayComponent = EchoCharacter->FindComponentByClass<UEchoReplayComponent>())
+	{
+		TSharedPtr<const FEchoRecord> EchoRecord = this->EchoRecordArray.Last();
+
+		ReplayComponent->InitializeReplayComponent(EchoRecord);
 	}
+
+
+	AEchoLoopCharacter* PlayerCharacter = EchoLoopUtils::GetPlayerCharacter(this->GetWorld());
+	EchoCharacter->CopyAppearanceFromCharacter(PlayerCharacter);
+
+	this->EchoCharacterArray.Add(EchoCharacter);
 	
 	return;
 }
 
 void UEchoLoopSubsystem::StartLoopTimer()
 {
-
-	if (UEchoRecordComponent* EchoRecordComponent = this->EchoRecorder.Get())
-	{
-		EchoRecordComponent->StartRecord();
-	}
 
 	this->GetWorld()->GetTimerManager().SetTimer
 	(
