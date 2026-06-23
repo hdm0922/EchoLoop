@@ -9,6 +9,10 @@ class ECHOLOOP_API UEchoLoopSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 	
+public:
+
+	void RegisterEchoRecorder(class UEchoRecordComponent* EchoRecordComponent);
+
 protected:
 
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
@@ -28,7 +32,7 @@ private:
 
 	FTimerHandle LoopTimer;
 
-	TArray<class FEchoRecord*> EchoRecordArray;
+	TArray<TSharedPtr<const struct FEchoRecord>> EchoRecordArray;
 
 	TWeakObjectPtr<class UEchoRecordComponent> EchoRecorder;
 	TWeakObjectPtr<class APlayerStart> PlayerStart;

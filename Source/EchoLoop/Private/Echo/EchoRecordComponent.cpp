@@ -1,7 +1,10 @@
 
 #include "Echo/EchoRecordComponent.h"
+#include "EchoLoopCharacter.h"
 
 #include "Loop/EchoLoopConstants.h"
+#include "Loop/EchoLoopSubsystem.h"
+
 
 UEchoRecordComponent::UEchoRecordComponent()
 {
@@ -25,25 +28,53 @@ void UEchoRecordComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	return;
 }
 
+TSharedPtr<const struct FEchoRecord> UEchoRecordComponent::FinishRecord()
+{
+	return MakeShared<FEchoRecord>(MoveTemp(this->EchoRecord));
+}
+
+void UEchoRecordComponent::StartRecord()
+{
+	this->AccumTime = 0.0f;
+	this->EchoRecord = {};
+
+	return;
+}
+
 void UEchoRecordComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	this->ResetRecord();
+	if (UWorld* World = this->GetWorld())
+	{
+		UEchoLoopSubsystem* EchoLoopSubsystem = World->GetSubsystem<UEchoLoopSubsystem>();
+		EchoLoopSubsystem->RegisterEchoRecorder(this);
+	}
+
+	this->StartRecord();
 
 	return;
 }
 
 void UEchoRecordComponent::RecordFixedTick()
 {
+	FEchoRecordFrame EchoRecordFrame;
+	{
+		AEchoLoopCharacter* PlayerCharacter = Cast<AEchoLoopCharacter>(this->GetOwner());
+		check(PlayerCharacter);
 
-	return;
-}
+		AController* PlayerController = PlayerCharacter->GetController();
+		check(PlayerController);
 
-void UEchoRecordComponent::ResetRecord()
-{
+		FVector2D MovementVector = PlayerCharacter->GetMovementVector2D();
+		double ControlYaw = PlayerController->GetControlRotation().Yaw;
 
-	this->AccumTime = 0.0f;
+		EchoRecordFrame.MoveX		= MovementVector.X;
+		EchoRecordFrame.MoveY		= MovementVector.Y;
+		EchoRecordFrame.ControlYaw	= ControlYaw;
+	}
+
+	this->EchoRecord.FrameMovement.Add(EchoRecordFrame);
 
 	return;
 }

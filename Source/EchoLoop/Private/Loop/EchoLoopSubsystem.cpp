@@ -1,29 +1,38 @@
 
-#include "Loop/EchoLoopSubsystem.h"
-#include "Loop/EchoLoopConstants.h"
+#include "Echo/EchoRecordComponent.h"
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerStart.h"
 
 #include "Kismet/GameplayStatics.h"
+
+#include "Loop/EchoLoopSubsystem.h"
+#include "Loop/EchoLoopConstants.h"
+
 #include "TimerManager.h"
+
+void UEchoLoopSubsystem::RegisterEchoRecorder(UEchoRecordComponent* EchoRecordComponent)
+{
+	this->EchoRecorder = EchoRecordComponent;
+
+	if (IsValid(this->EchoRecorder.Get()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Valid Recorder Found."));
+	}
+
+	return;
+}
 
 void UEchoLoopSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	if (!IsValid(&InWorld)) return;
-
 	// Get weak reference : Player Start
 	{
-		AActor* pPlayerStart = UGameplayStatics::GetActorOfClass(&InWorld, APlayerStart::StaticClass());
-		this->PlayerStart = Cast<APlayerStart>(pPlayerStart);
+		AActor* pPlayerStart	= UGameplayStatics::GetActorOfClass(&InWorld, APlayerStart::StaticClass());
+		this->PlayerStart		= Cast<APlayerStart>(pPlayerStart);
 	}
-
-	// Get weak reference : Echo Record Component
-	UE_LOG(LogTemp, Warning, TEXT("Get Echo Record Component WeakPtr ... "));
-
 
 	this->ResetEntityStatus();
 	this->StartLoopTimer();
@@ -57,9 +66,16 @@ void UEchoLoopSubsystem::Callback_TimeLimitExceeded()
 
 void UEchoLoopSubsystem::RecordEcho()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Save Recorded Echo ..."));
 
+	UEchoRecordComponent* EchoRecordComponent = this->EchoRecorder.Get();
+	if (!IsValid(EchoRecordComponent)) return;
 
+	TSharedPtr<const FEchoRecord> CompletedRecord = EchoRecordComponent->FinishRecord();
+	if (!CompletedRecord.IsValid()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Saved Echo! At Slot %d"), this->EchoRecordArray.Num());
+
+	this->EchoRecordArray.Add(MoveTemp(CompletedRecord));
 
 	return;
 }
@@ -67,7 +83,6 @@ void UEchoLoopSubsystem::RecordEcho()
 void UEchoLoopSubsystem::ResetCharacterStatus(ACharacter* InCharacter)
 {
 	if (!IsValid(InCharacter)) return;
-
 
 	InCharacter->StopJumping();
 
@@ -97,7 +112,6 @@ void UEchoLoopSubsystem::ResetCharacterStatus(ACharacter* InCharacter)
 		}
 	}
 
-
 	return;
 }
 
@@ -115,13 +129,18 @@ void UEchoLoopSubsystem::ResetEntityStatus()
 	this->ResetCharacterStatus(PlayerCharacter);
 
 	// Reset Status : Echo
-	UE_LOG(LogTemp, Warning, TEXT("Reset Echo ... "));
+	UE_LOG(LogTemp, Warning, TEXT("Reset Echo Players ... "));
 
 	return;
 }
 
 void UEchoLoopSubsystem::StartLoopTimer()
 {
+
+	if (UEchoRecordComponent* EchoRecordComponent = this->EchoRecorder.Get())
+	{
+		EchoRecordComponent->StartRecord();
+	}
 
 	this->GetWorld()->GetTimerManager().SetTimer
 	(

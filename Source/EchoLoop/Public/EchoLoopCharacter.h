@@ -92,5 +92,15 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
+
+public:
+
+	FVector2D GetMovementVector2D() const { return this->MovementVector; }
+
+private:
+
+	FVector2D MovementVector = FVector2D::ZeroVector;
 };
 

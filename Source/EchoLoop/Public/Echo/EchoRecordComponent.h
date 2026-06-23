@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Echo/EchoRecordTypes.h"
 #include "EchoRecordComponent.generated.h"
 
 
@@ -16,6 +17,11 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	TSharedPtr<const struct FEchoRecord> FinishRecord();
+
+	void StartRecord();
+	
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -23,7 +29,9 @@ protected:
 private:
 
 	void RecordFixedTick();
-	void ResetRecord();
+
 
 	float AccumTime = 0.0f;
+
+	struct FEchoRecord EchoRecord;
 };

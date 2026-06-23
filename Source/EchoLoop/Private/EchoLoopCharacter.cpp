@@ -1,16 +1,20 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "EchoLoopCharacter.h"
-#include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+
+#include "EchoLoop.h"
+#include "EchoLoopCharacter.h"
+#include "Echo/EchoRecordComponent.h"
+#include "Engine/LocalPlayer.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
+
 #include "InputActionValue.h"
-#include "EchoLoop.h"
+
 
 AEchoLoopCharacter::AEchoLoopCharacter()
 {
@@ -48,6 +52,8 @@ AEchoLoopCharacter::AEchoLoopCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	CreateDefaultSubobject<UEchoRecordComponent>(TEXT("EchoRecordComponent"));
 }
 
 void AEchoLoopCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -75,10 +81,10 @@ void AEchoLoopCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void AEchoLoopCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	this->MovementVector = Value.Get<FVector2D>();
 
 	// route the input
-	DoMove(MovementVector.X, MovementVector.Y);
+	DoMove(this->MovementVector.X, this->MovementVector.Y);
 }
 
 void AEchoLoopCharacter::Look(const FInputActionValue& Value)
