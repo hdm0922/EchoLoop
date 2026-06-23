@@ -1,6 +1,6 @@
 
-#include "EchoLoopSubsystem.h"
-#include "EchoLoopConstants.h"
+#include "Loop/EchoLoopSubsystem.h"
+#include "Loop/EchoLoopConstants.h"
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
