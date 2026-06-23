@@ -26,6 +26,7 @@ private:
 	void ResetCharacterStatus(class ACharacter* InCharacter);
 	void ResetEntityStatus();
 
+	void SpawnEchoCharacter();
 	void StartLoopTimer();
 
 
@@ -33,6 +34,7 @@ private:
 	FTimerHandle LoopTimer;
 
 	TArray<TSharedPtr<const struct FEchoRecord>> EchoRecordArray;
+	TArray<TWeakObjectPtr<class AEchoCharacter>> EchoCharacterArray;
 
 	TWeakObjectPtr<class UEchoRecordComponent> EchoRecorder;
 	TWeakObjectPtr<class APlayerStart> PlayerStart;

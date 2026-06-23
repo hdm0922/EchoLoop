@@ -1,5 +1,8 @@
 
 #include "Echo/EchoRecordComponent.h"
+#include "Echo/EchoCharacter.h"
+#include "EchoLoopCharacter.h"
+#include "EchoLoopUtils.h"
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -15,11 +18,6 @@
 void UEchoLoopSubsystem::RegisterEchoRecorder(UEchoRecordComponent* EchoRecordComponent)
 {
 	this->EchoRecorder = EchoRecordComponent;
-
-	if (IsValid(this->EchoRecorder.Get()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Valid Recorder Found."));
-	}
 
 	return;
 }
@@ -58,6 +56,7 @@ void UEchoLoopSubsystem::Callback_TimeLimitExceeded()
 	if (!IsValid(this->GetWorld())) return;
 
 	this->RecordEcho();
+	this->SpawnEchoCharacter();
 	this->ResetEntityStatus();
 	this->StartLoopTimer();
 	
@@ -72,8 +71,6 @@ void UEchoLoopSubsystem::RecordEcho()
 
 	TSharedPtr<const FEchoRecord> CompletedRecord = EchoRecordComponent->FinishRecord();
 	if (!CompletedRecord.IsValid()) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Saved Echo! At Slot %d"), this->EchoRecordArray.Num());
 
 	this->EchoRecordArray.Add(MoveTemp(CompletedRecord));
 
@@ -117,20 +114,32 @@ void UEchoLoopSubsystem::ResetCharacterStatus(ACharacter* InCharacter)
 
 void UEchoLoopSubsystem::ResetEntityStatus()
 {
-	// Get player
-	ACharacter* PlayerCharacter = nullptr;
-	{
-		APlayerController*	PlayerController	= this->GetWorld()->GetFirstPlayerController();
-		APawn*				PlayerPawn			= PlayerController ? PlayerController->GetPawn() : nullptr;
-		PlayerCharacter							= PlayerPawn ? Cast<ACharacter>(PlayerPawn) : nullptr;
-	}
-	
 	// Reset Status : Player
+	AEchoLoopCharacter* PlayerCharacter = EchoLoopUtils::GetPlayerCharacter(this->GetWorld());
 	this->ResetCharacterStatus(PlayerCharacter);
 
 	// Reset Status : Echo
-	UE_LOG(LogTemp, Warning, TEXT("Reset Echo Players ... "));
+	for (TWeakObjectPtr<AEchoCharacter> EchoCharacter : this->EchoCharacterArray)
+	{
+		this->ResetCharacterStatus(EchoCharacter.Get());
+	}
 
+	return;
+}
+
+void UEchoLoopSubsystem::SpawnEchoCharacter()
+{
+
+	AEchoCharacter* EchoCharacter = this->GetWorld()->SpawnActor<AEchoCharacter>(AEchoCharacter::StaticClass(), FTransform());
+	
+	if (IsValid(EchoCharacter))
+	{
+		AEchoLoopCharacter* PlayerCharacter = EchoLoopUtils::GetPlayerCharacter(this->GetWorld());
+		EchoCharacter->CopyAppearanceFromCharacter(PlayerCharacter);
+
+		this->EchoCharacterArray.Add(EchoCharacter);
+	}
+	
 	return;
 }
 
