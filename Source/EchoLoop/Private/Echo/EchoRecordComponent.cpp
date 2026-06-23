@@ -1,6 +1,7 @@
 
-#include "EchoRecordComponent.h"
-#include "EchoLoopConstants.h"
+#include "Echo/EchoRecordComponent.h"
+
+#include "Loop/EchoLoopConstants.h"
 
 UEchoRecordComponent::UEchoRecordComponent()
 {
