@@ -25,7 +25,6 @@ private:
 	void StartLoopTimer();
 
 
-	static constexpr float LOOP_DURATION = 10.0f;
 
 	FTimerHandle LoopTimer;
 

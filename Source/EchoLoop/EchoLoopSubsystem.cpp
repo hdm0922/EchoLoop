@@ -1,6 +1,6 @@
 
-
 #include "EchoLoopSubsystem.h"
+#include "EchoLoopConstants.h"
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -128,7 +128,7 @@ void UEchoLoopSubsystem::StartLoopTimer()
 		this->LoopTimer,
 		this,
 		&UEchoLoopSubsystem::Callback_TimeLimitExceeded,
-		UEchoLoopSubsystem::LOOP_DURATION
+		EchoLoopConstants::LOOP_DURATION
 	);
 
 	return;

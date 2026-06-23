@@ -123,11 +123,13 @@ void AEchoLoopCharacter::DoLook(float Yaw, float Pitch)
 void AEchoLoopCharacter::DoJumpStart()
 {
 	// signal the character to jump
+	UE_LOG(LogTemp, Warning, TEXT("Jump Start"));
 	Jump();
 }
 
 void AEchoLoopCharacter::DoJumpEnd()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Jump End"));
 	// signal the character to stop jumping
 	StopJumping();
 }
