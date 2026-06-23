@@ -11,11 +11,19 @@ class ECHOLOOP_API UEchoRecordComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
+
 	UEchoRecordComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
+
 	virtual void BeginPlay() override;
-			
+
+private:
+
+	void RecordFixedTick();
+	void ResetRecord();
+
+	float AccumTime = 0.0f;
 };
