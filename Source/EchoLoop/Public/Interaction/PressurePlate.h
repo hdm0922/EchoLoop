@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Loop/LoopResettableActor.h"
 #include "PressurePlate.generated.h"
 
 UCLASS()
-class ECHOLOOP_API APressurePlate : public AActor
+class ECHOLOOP_API APressurePlate : public ALoopResettableActor
 {
 	GENERATED_BODY()
 	
@@ -16,6 +16,9 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+
+	virtual void TurnOFF() override;
+	virtual void TurnON() override;
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -28,9 +31,6 @@ protected:
 
 private:
 
-	void TurnOFF();
-	void TurnON();
-
 	void UpdateState();
 
 	UPROPERTY(VisibleAnywhere, Category = "Pressure Plate")
@@ -39,13 +39,5 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Pressure Plate")
 	TObjectPtr<UStaticMeshComponent> PlateMesh;
 
-	UPROPERTY(EditAnywhere, Category = "Pressure Plate")
-	TObjectPtr<UMaterialInterface> OnMaterial;
-
-	UPROPERTY(EditAnywhere, Category = "Pressure Plate")
-	TObjectPtr<UMaterialInterface> OffMaterial;
-
 	TSet<TWeakObjectPtr<AActor>> ActorsPressing;
-
-	bool bIsOn = false;
 };

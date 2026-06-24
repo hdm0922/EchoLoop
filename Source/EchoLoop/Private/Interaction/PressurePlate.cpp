@@ -9,8 +9,6 @@
 
 APressurePlate::APressurePlate()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
 	this->TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
 	this->TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	this->TriggerBox->SetGenerateOverlapEvents(true);
@@ -29,8 +27,6 @@ void APressurePlate::BeginPlay()
 	
 	this->TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &APressurePlate::OnOverlapBegin);
 	this->TriggerBox->OnComponentEndOverlap.AddDynamic(this, &APressurePlate::OnOverlapEnd);
-
-	this->TurnOFF();
 
 	return;
 }
@@ -64,20 +60,20 @@ void APressurePlate::OnOverlapEnd(
 
 void APressurePlate::TurnOFF()
 {
-	check(this->OffMaterial);
+	Super::TurnOFF();
 
-	this->bIsOn = false;
-	this->PlateMesh->SetMaterial(0, this->OffMaterial);
+	check(this->GetMaterial_OFF());
+	this->PlateMesh->SetMaterial(0, this->GetMaterial_OFF());
 
 	return;
 }
 
 void APressurePlate::TurnON()
 {
-	check(this->OnMaterial);
+	Super::TurnON();
 
-	this->bIsOn = true;
-	this->PlateMesh->SetMaterial(0, this->OnMaterial);
+	check(this->GetMaterial_ON());
+	this->PlateMesh->SetMaterial(0, this->GetMaterial_ON());
 
 	return;
 }
@@ -86,10 +82,11 @@ void APressurePlate::UpdateState()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%d"), this->ActorsPressing.Num());
 
+	bool bOldOn	= this->IsOn();
 	bool bNewOn = (this->ActorsPressing.Num() > 0);
 
-	if		(!this->bIsOn && bNewOn) { this->TurnON();  }
-	else if (this->bIsOn && !bNewOn) { this->TurnOFF(); }
+	if		(!bOldOn && bNewOn) { this->TurnON();  }
+	else if (bOldOn && !bNewOn) { this->TurnOFF(); }
 
 	return;
 }

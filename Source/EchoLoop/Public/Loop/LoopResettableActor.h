@@ -24,15 +24,17 @@ protected:
 	virtual void TurnOFF();
 	virtual void TurnON();
 
+	bool IsOn() const { return this->bIsOn; }
+
 	TObjectPtr<UMaterialInterface> GetMaterial_ON () const { return this->OnMaterial;  }
 	TObjectPtr<UMaterialInterface> GetMaterial_OFF() const { return this->OffMaterial; }
 
 private:
 
-	UPROPERTY(EditAnywhere, Category = "EchoLoop")
+	UPROPERTY(EditAnywhere, Category = "Material")
 	TObjectPtr<UMaterialInterface> OnMaterial;
 
-	UPROPERTY(EditAnywhere, Category = "EchoLoop")
+	UPROPERTY(EditAnywhere, Category = "Material")
 	TObjectPtr<UMaterialInterface> OffMaterial;
 
 	bool bIsOn = false;

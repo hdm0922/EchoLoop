@@ -6,8 +6,6 @@
 
 ALever::ALever()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
 	this->LeverMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeverMesh"));
 	this->LeverMesh->SetCollisionProfileName(TEXT("BlockAll"));
 
@@ -16,8 +14,8 @@ ALever::ALever()
 
 void ALever::InteractWith(AActor* InActor)
 {
-	if (this->bIsOn) { this->TurnOFF(); }
-	else { this->TurnON(); }
+	if (this->IsOn())	{ this->TurnOFF(); }
+	else				{ this->TurnON();  }
 
 	return;
 }
@@ -26,27 +24,25 @@ void ALever::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	this->TurnOFF();
-
 	return;
 }
 
 void ALever::TurnOFF()
 {
-	check(this->OffMaterial);
+	Super::TurnOFF();
 
-	this->bIsOn = false;
-	this->LeverMesh->SetMaterial(0, this->OffMaterial);
+	check(this->GetMaterial_OFF());
+	this->LeverMesh->SetMaterial(0, this->GetMaterial_OFF());
 
 	return;
 }
 
 void ALever::TurnON()
 {
-	check(this->OnMaterial);
+	Super::TurnON();
 
-	this->bIsOn = true;
-	this->LeverMesh->SetMaterial(0, this->OnMaterial);
+	check(this->GetMaterial_ON());
+	this->LeverMesh->SetMaterial(0, this->GetMaterial_ON());
 
 	return;
 }
