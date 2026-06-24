@@ -15,6 +15,7 @@
 #include "GameFramework/Controller.h"
 
 #include "InputActionValue.h"
+#include "Interaction/Interactable.h"
 
 
 AEchoLoopCharacter::AEchoLoopCharacter()
@@ -62,6 +63,9 @@ void AEchoLoopCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
+		// Interacting
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AEchoLoopCharacter::Interact);
+
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started,   this, &AEchoLoopCharacter::DoJumpStart);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AEchoLoopCharacter::DoJumpEnd);
@@ -143,6 +147,65 @@ void AEchoLoopCharacter::DoJumpStart()
 void AEchoLoopCharacter::DoJumpEnd()
 {
 	StopJumping();
+
+	return;
+}
+
+void AEchoLoopCharacter::InteractWith(IInteractable& InInteractable)
+{
+	InInteractable.InteractWith(this);
+
+	return;
+}
+
+void AEchoLoopCharacter::Interact()
+{
+	FHitResult HitResult;
+
+	FVector TraceStart;
+	FVector TraceEnd;
+	{
+		FVector		ViewLocation;
+		FRotator	ViewRotation;
+
+		APlayerController* PlayerController = Cast<APlayerController>(this->GetController());
+		PlayerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
+
+		const float INTERACTION_DISTANCE = 200.0f;
+
+		TraceStart	= this->GetActorLocation();
+		TraceEnd	= TraceStart + (ViewRotation.Vector() * INTERACTION_DISTANCE);
+	}
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.TraceTag = SCENE_QUERY_STAT(InteractionTrace);
+	
+	const bool bHit = this->GetWorld()->LineTraceSingleByChannel(
+		HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams
+	);
+
+	// Debug Code
+	if (false)
+	{
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, bHit ? FColor::Green : FColor::Red, false, 2.0f, 0, 1.5f);
+
+		if (!bHit)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No Hit"));
+		}
+		else
+		{
+			DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 12.0f, FColor::Yellow, false, 2.0f);
+			UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *GetNameSafe(HitResult.GetActor()));
+		}
+	}
+
+	if (!bHit) return;
+		
+	if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
+	{
+		this->InteractWith(*Interactable);
+	}
 
 	return;
 }
