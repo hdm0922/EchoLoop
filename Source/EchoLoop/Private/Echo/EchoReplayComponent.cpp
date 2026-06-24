@@ -18,11 +18,10 @@ void UEchoReplayComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	this->AccumTime += DeltaTime;
 
-	while (this->AccumTime > EchoLoopConstants::FIXED_DELTA_TIME)
-	{
-		this->TickID++;
-		this->AccumTime -= EchoLoopConstants::FIXED_DELTA_TIME;
-	}
+	int FixedTickCount = static_cast<int>(this->AccumTime / EchoLoopConstants::FIXED_DELTA_TIME);
+	
+	this->TickID	+= FixedTickCount;
+	this->AccumTime -= static_cast<float>(FixedTickCount) * EchoLoopConstants::FIXED_DELTA_TIME;
 
 	this->ReplayEchoFrame();
 
@@ -40,6 +39,9 @@ void UEchoReplayComponent::StartReplay()
 {
 	this->AccumTime = 0.0f;
 	this->TickID	= 0u;
+	this->JumpIdx	= 0u;
+
+	this->bJumpCommandLastFrame = false;
 
 	return;
 }
@@ -53,13 +55,34 @@ void UEchoReplayComponent::BeginPlay()
 
 void UEchoReplayComponent::ReplayEchoFrame()
 {
-	int FrameMovementIdx = FMath::Clamp(static_cast<int>(this->TickID), 0, this->EchoRecord->FrameMovement.Num() - 1);
-	FEchoRecordFrame EchoRecordFrame = this->EchoRecord->FrameMovement[FrameMovementIdx];
-
 	AEchoCharacter* EchoCharacter = Cast<AEchoCharacter>(this->GetOwner());
 	check(EchoCharacter);
 
+
+
+	int idx = FMath::Clamp(static_cast<int>(this->TickID), 0, EchoLoopConstants::TOTAL_TICKS - 1);
+	FEchoRecordFrame EchoRecordFrame = this->EchoRecord->FrameMovement[idx];
+
 	EchoCharacter->DoMove(EchoRecordFrame);
 	
+
+
+	if (this->bJumpCommandLastFrame)
+	{
+		EchoCharacter->StopJumping();
+
+		this->bJumpCommandLastFrame = false;
+	}
+
+	if (
+		this->EchoRecord->JumpCommand.IsValidIndex(this->JumpIdx) &&
+		this->EchoRecord->JumpCommand[this->JumpIdx] <= this->TickID)
+	{
+		EchoCharacter->Jump();
+
+		this->JumpIdx++;
+		this->bJumpCommandLastFrame = true;
+	}
+
 	return;
 }

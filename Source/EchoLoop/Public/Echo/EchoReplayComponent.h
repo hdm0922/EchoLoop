@@ -29,8 +29,10 @@ private:
 	void ReplayEchoFrame();
 
 	float AccumTime = 0.0f;
+	uint32 TickID	= 0u;
+	uint32 JumpIdx	= 0u;
 
-	uint32 TickID = 0u;
+	bool bJumpCommandLastFrame = false;
 
 	TSharedPtr<const struct FEchoRecord> EchoRecord;
 

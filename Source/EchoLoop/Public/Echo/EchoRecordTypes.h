@@ -12,4 +12,5 @@ struct FEchoRecordFrame
 struct FEchoRecord
 {
 	TArray<FEchoRecordFrame> FrameMovement;
+	TArray<uint32> JumpCommand;
 };

@@ -33,10 +33,22 @@ TSharedPtr<const struct FEchoRecord> UEchoRecordComponent::FinishRecord()
 	return MakeShared<FEchoRecord>(MoveTemp(this->EchoRecord));
 }
 
+void UEchoRecordComponent::RecordJumpCommand()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Recording Jump!"));
+	this->EchoRecord.JumpCommand.Add(this->TickID);
+
+	return;
+}
+
 void UEchoRecordComponent::StartRecord()
 {
 	this->AccumTime = 0.0f;
+	this->TickID	= 0u;
+
 	this->EchoRecord = {};
+	this->EchoRecord.FrameMovement.SetNum(EchoLoopConstants::TOTAL_TICKS);
+	this->EchoRecord.JumpCommand.Empty();
 
 	return;
 }
@@ -58,23 +70,30 @@ void UEchoRecordComponent::BeginPlay()
 
 void UEchoRecordComponent::RecordFixedTick()
 {
+	AEchoLoopCharacter* PlayerCharacter = Cast<AEchoLoopCharacter>(this->GetOwner());
+	check(PlayerCharacter);
+
+	AController* PlayerController = PlayerCharacter->GetController();
+	check(PlayerController);
+
+
+
 	FEchoRecordFrame EchoRecordFrame;
 	{
-		AEchoLoopCharacter* PlayerCharacter = Cast<AEchoLoopCharacter>(this->GetOwner());
-		check(PlayerCharacter);
-
-		AController* PlayerController = PlayerCharacter->GetController();
-		check(PlayerController);
-
-		FVector2D MovementVector = PlayerCharacter->GetMovementVector2D();
-		double ControlYaw = PlayerController->GetControlRotation().Yaw;
+		FVector2D	MovementVector	= PlayerCharacter->GetMovementVector2D();
+		double		ControlYaw		= PlayerController->GetControlRotation().Yaw;
 
 		EchoRecordFrame.MoveX		= MovementVector.X;
 		EchoRecordFrame.MoveY		= MovementVector.Y;
 		EchoRecordFrame.ControlYaw	= ControlYaw;
 	}
 
-	this->EchoRecord.FrameMovement.Add(EchoRecordFrame);
+	int idx = FMath::Clamp(static_cast<int>(this->TickID), 0, EchoLoopConstants::TOTAL_TICKS - 1);
+	this->EchoRecord.FrameMovement[idx] = EchoRecordFrame;
+
+
+
+	this->TickID++;
 
 	return;
 }

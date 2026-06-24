@@ -19,6 +19,7 @@ public:
 
 	TSharedPtr<const struct FEchoRecord> FinishRecord();
 
+	void RecordJumpCommand();
 	void StartRecord();
 	
 
@@ -32,6 +33,7 @@ private:
 
 
 	float AccumTime = 0.0f;
+	uint32 TickID = 0u;
 
 	struct FEchoRecord EchoRecord;
 };

@@ -63,8 +63,8 @@ void AEchoLoopCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started,   this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started,   this, &AEchoLoopCharacter::DoJumpStart);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AEchoLoopCharacter::DoJumpEnd);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AEchoLoopCharacter::Move);
@@ -132,16 +132,19 @@ void AEchoLoopCharacter::DoLook(float Yaw, float Pitch)
 
 void AEchoLoopCharacter::DoJumpStart()
 {
-	// signal the character to jump
-	UE_LOG(LogTemp, Warning, TEXT("Jump Start"));
 	Jump();
+
+	UEchoRecordComponent* RecordComponent = this->FindComponentByClass<UEchoRecordComponent>();
+	RecordComponent->RecordJumpCommand();
+
+	return;
 }
 
 void AEchoLoopCharacter::DoJumpEnd()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Jump End"));
-	// signal the character to stop jumping
 	StopJumping();
+
+	return;
 }
 
 void AEchoLoopCharacter::StopMove(const FInputActionValue& Value)
