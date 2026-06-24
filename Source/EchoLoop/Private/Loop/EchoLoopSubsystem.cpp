@@ -14,12 +14,27 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Loop/EchoLoopConstants.h"
+#include "Loop/LoopResettableActor.h"
 
 #include "TimerManager.h"
 
-void UEchoLoopSubsystem::RegisterEchoRecorder(UEchoRecordComponent* EchoRecordComponent)
+void UEchoLoopSubsystem::RegisterEchoRecorder(TWeakObjectPtr<UEchoRecordComponent> InRecordComponent)
 {
-	this->EchoRecorder = EchoRecordComponent;
+	this->EchoRecorder = InRecordComponent;
+
+	return;
+}
+
+void UEchoLoopSubsystem::RegisterResettableActor(TWeakObjectPtr<ALoopResettableActor> InResettableActor)
+{
+	this->ActorsToReset.Add(InResettableActor);
+
+	return;
+}
+
+void UEchoLoopSubsystem::UnregisterResettableActor(TWeakObjectPtr<ALoopResettableActor> InResettableActor)
+{
+	this->ActorsToReset.Remove(InResettableActor);
 
 	return;
 }
@@ -27,6 +42,10 @@ void UEchoLoopSubsystem::RegisterEchoRecorder(UEchoRecordComponent* EchoRecordCo
 void UEchoLoopSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
+
+	this->ActorsToReset			= {};
+	this->EchoCharacterArray	= {};
+	this->EchoRecordArray		= {};
 
 	// Get weak reference : Player Start
 	{
@@ -59,7 +78,10 @@ void UEchoLoopSubsystem::Callback_TimeLimitExceeded()
 
 	this->RecordEcho();
 	this->SpawnEchoCharacter();
+
 	this->ResetEntityStatus();
+	this->ResetActors();
+
 	this->StartLoopTimer();
 	
 	return;
@@ -109,6 +131,17 @@ void UEchoLoopSubsystem::ResetCharacterStatus(ACharacter* InCharacter)
 		{
 			Controller->SetControlRotation(StartTransform.Rotator());
 		}
+	}
+
+	return;
+}
+
+void UEchoLoopSubsystem::ResetActors()
+{
+
+	for (TWeakObjectPtr<ALoopResettableActor> ActorToReset : this->ActorsToReset)
+	{
+		ActorToReset.Get()->Reset();
 	}
 
 	return;

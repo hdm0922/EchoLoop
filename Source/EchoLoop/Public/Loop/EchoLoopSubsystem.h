@@ -4,6 +4,13 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "EchoLoopSubsystem.generated.h"
 
+class AEchoCharacter;
+class ALoopResettableActor;
+class APlayerStart;
+class UEchoRecordComponent;
+
+struct FEchoRecord;
+
 UCLASS()
 class ECHOLOOP_API UEchoLoopSubsystem : public UWorldSubsystem
 {
@@ -11,7 +18,10 @@ class ECHOLOOP_API UEchoLoopSubsystem : public UWorldSubsystem
 	
 public:
 
-	void RegisterEchoRecorder(class UEchoRecordComponent* EchoRecordComponent);
+	void RegisterEchoRecorder(TWeakObjectPtr<UEchoRecordComponent> InRecordComponent);
+	void RegisterResettableActor(TWeakObjectPtr<ALoopResettableActor> InResettableActor);
+
+	void UnregisterResettableActor(TWeakObjectPtr<ALoopResettableActor> InResettableActor);
 
 protected:
 
@@ -24,6 +34,7 @@ private:
 
 	void RecordEcho();
 	void ResetCharacterStatus(class ACharacter* InCharacter);
+	void ResetActors();
 	void ResetEntityStatus();
 
 	void SpawnEchoCharacter();
@@ -33,9 +44,11 @@ private:
 
 	FTimerHandle LoopTimer;
 
-	TArray<TSharedPtr<const struct FEchoRecord>> EchoRecordArray;
-	TArray<TWeakObjectPtr<class AEchoCharacter>> EchoCharacterArray;
+	TArray<TWeakObjectPtr<AEchoCharacter>>		EchoCharacterArray;
+	TArray<TSharedPtr<const FEchoRecord>>		EchoRecordArray;
 
-	TWeakObjectPtr<class UEchoRecordComponent> EchoRecorder;
-	TWeakObjectPtr<class APlayerStart> PlayerStart;
+	TSet<TWeakObjectPtr<ALoopResettableActor>>	ActorsToReset;
+
+	TWeakObjectPtr<UEchoRecordComponent>		EchoRecorder;
+	TWeakObjectPtr<APlayerStart>				PlayerStart;
 };
