@@ -19,6 +19,7 @@ public:
 
 	TSharedPtr<const struct FEchoRecord> FinishRecord();
 
+	void RecordInteractionCommand(TWeakObjectPtr<AActor> InActor);
 	void RecordJumpCommand();
 	void StartRecord();
 	

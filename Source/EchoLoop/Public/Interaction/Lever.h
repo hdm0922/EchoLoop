@@ -14,11 +14,12 @@ public:
 
 	ALever();
 
+	virtual void InteractWith(AActor* InActor) override;
+
 protected:
 
 	virtual void BeginPlay() override;
-	virtual void InteractWith(AActor* InActor) override;
-
+	
 private:
 
 	void TurnOFF();

@@ -9,6 +9,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Interaction/Interactable.h"
+
 AEchoCharacter::AEchoCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -37,6 +39,14 @@ AEchoCharacter::AEchoCharacter()
 void AEchoCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	return;
+}
+
+void AEchoCharacter::InteractWith(IInteractable& InInteractable)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Echo Interaction"));
+	InInteractable.InteractWith(this);
 
 	return;
 }
@@ -82,4 +92,3 @@ void AEchoCharacter::BeginPlay()
 	
 	return;
 }
-

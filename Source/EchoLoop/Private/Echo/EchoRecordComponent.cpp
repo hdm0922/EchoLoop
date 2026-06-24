@@ -33,6 +33,16 @@ TSharedPtr<const struct FEchoRecord> UEchoRecordComponent::FinishRecord()
 	return MakeShared<FEchoRecord>(MoveTemp(this->EchoRecord));
 }
 
+void UEchoRecordComponent::RecordInteractionCommand(TWeakObjectPtr<AActor> InActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Recording Interaction!"));
+
+	FEchoInteractionCommand EchoInteractionCommand(this->TickID, InActor);
+	this->EchoRecord.InteractionCommand.Add(EchoInteractionCommand);
+
+	return;
+}
+
 void UEchoRecordComponent::RecordJumpCommand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Recording Jump!"));
@@ -49,6 +59,7 @@ void UEchoRecordComponent::StartRecord()
 	this->EchoRecord = {};
 	this->EchoRecord.FrameMovement.SetNum(EchoLoopConstants::TOTAL_TICKS);
 	this->EchoRecord.JumpCommand.Empty();
+	this->EchoRecord.InteractionCommand.Empty();
 
 	return;
 }

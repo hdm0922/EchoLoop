@@ -9,8 +9,15 @@ struct FEchoRecordFrame
 	double ControlYaw	= 0.0;
 };
 
+struct FEchoInteractionCommand
+{
+	uint32							TickID				= 0u;
+	TWeakObjectPtr<class AActor>	InteractableActor	= nullptr;
+};
+
 struct FEchoRecord
 {
-	TArray<FEchoRecordFrame> FrameMovement;
-	TArray<uint32> JumpCommand;
+	TArray<FEchoRecordFrame>		FrameMovement;
+	TArray<FEchoInteractionCommand> InteractionCommand;
+	TArray<uint32>					JumpCommand;
 };

@@ -201,9 +201,12 @@ void AEchoLoopCharacter::Interact()
 	}
 
 	if (!bHit) return;
-		
+
 	if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 	{
+		UEchoRecordComponent* RecordComponent = this->FindComponentByClass<UEchoRecordComponent>();
+		RecordComponent->RecordInteractionCommand(HitResult.GetActor());
+
 		this->InteractWith(*Interactable);
 	}
 

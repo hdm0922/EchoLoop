@@ -14,19 +14,19 @@ ALever::ALever()
 	SetRootComponent(this->LeverMesh);
 }
 
+void ALever::InteractWith(AActor* InActor)
+{
+	if (this->bIsOn) { this->TurnOFF(); }
+	else { this->TurnON(); }
+
+	return;
+}
+
 void ALever::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	this->TurnOFF();
-
-	return;
-}
-
-void ALever::InteractWith(AActor* InActor)
-{
-	if (this->bIsOn)	{ this->TurnOFF(); }
-	else				{ this->TurnON(); }
 
 	return;
 }

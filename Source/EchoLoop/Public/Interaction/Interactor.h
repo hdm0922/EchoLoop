@@ -14,7 +14,7 @@ class ECHOLOOP_API IInteractor
 {
 	GENERATED_BODY()
 
-protected:
+public:
 
 	virtual void InteractWith(class IInteractable& InInteractable) = 0;
 };
