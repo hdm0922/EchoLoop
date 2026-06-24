@@ -1,7 +1,8 @@
 
 #include "Echo/EchoReplayComponent.h"
 
-#include "Echo/EchoCharacter.h"
+#include "Character/EchoCharacter.h"
+
 #include "Echo/EchoRecordTypes.h"
 
 #include "Loop/EchoLoopConstants.h"

@@ -1,9 +1,9 @@
 
-#include "Echo/EchoCharacter.h"
+#include "Character/EchoCharacter.h"
 
+#include "Character/EchoLoopCharacter.h"
 #include "Components/CapsuleComponent.h"
 
-#include "EchoLoopCharacter.h"
 #include "Echo/EchoRecordTypes.h"
 #include "Echo/EchoReplayComponent.h"
 

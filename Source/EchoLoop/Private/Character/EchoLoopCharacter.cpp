@@ -1,5 +1,5 @@
 
-#include "EchoLoopCharacter.h"
+#include "Character/EchoLoopCharacter.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"

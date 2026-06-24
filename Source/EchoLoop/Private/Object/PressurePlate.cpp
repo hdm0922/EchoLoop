@@ -1,4 +1,4 @@
-#include "Interaction/PressurePlate.h"
+#include "Object/PressurePlate.h"
 
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"

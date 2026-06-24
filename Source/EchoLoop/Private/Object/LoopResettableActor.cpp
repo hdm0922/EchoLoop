@@ -1,4 +1,4 @@
-#include "Loop/LoopResettableActor.h"
+#include "Object/LoopResettableActor.h"
 
 #include "Loop/EchoLoopSubsystem.h"
 

@@ -1,4 +1,4 @@
-#include "Interaction/Lever.h"
+#include "Object/Lever.h"
 
 #include "Components/StaticMeshComponent.h"
 

@@ -1,11 +1,12 @@
 
 #include "Loop/EchoLoopSubsystem.h"
 
+#include "Character/EchoCharacter.h"
+#include "Character/EchoLoopCharacter.h"
+
+#include "EchoLoopUtils.h"
 #include "Echo/EchoRecordComponent.h"
 #include "Echo/EchoReplayComponent.h"
-#include "Echo/EchoCharacter.h"
-#include "EchoLoopCharacter.h"
-#include "EchoLoopUtils.h"
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -14,7 +15,8 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Loop/EchoLoopConstants.h"
-#include "Loop/LoopResettableActor.h"
+
+#include "Object/LoopResettableActor.h"
 
 #include "TimerManager.h"
 

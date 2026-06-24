@@ -1,6 +1,7 @@
 
 #include "Echo/EchoRecordComponent.h"
-#include "EchoLoopCharacter.h"
+
+#include "Character/EchoLoopCharacter.h"
 
 #include "Loop/EchoLoopConstants.h"
 #include "Loop/EchoLoopSubsystem.h"

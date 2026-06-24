@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Loop/LoopResettableActor.h"
+#include "Object/LoopResettableActor.h"
 #include "PressurePlate.generated.h"
 
 UCLASS()

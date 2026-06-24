@@ -1,6 +1,7 @@
 
 #include "EchoLoopUtils.h"
-#include "EchoLoopCharacter.h"
+
+#include "Character/EchoLoopCharacter.h"
 
 AEchoLoopCharacter* EchoLoopUtils::GetPlayerCharacter(UWorld* InWorld)
 {	

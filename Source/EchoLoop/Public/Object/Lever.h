@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Interaction/Interactable.h"
-#include "Loop/LoopResettableActor.h"
+#include "Object/LoopResettableActor.h"
 #include "Lever.generated.h"
 
 UCLASS()
