@@ -23,4 +23,7 @@ protected:
 
 	virtual void BeginPlay() override;
 	
+private:
+
+	TObjectPtr<UMaterialInterface> EchoMaterial;
 };

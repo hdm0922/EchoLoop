@@ -21,6 +21,17 @@ AEchoCharacter::AEchoCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement		= true;
 	GetCharacterMovement()->bUseControllerDesiredRotation	= false;
 	GetCharacterMovement()->bRunPhysicsWithNoController		= true;
+
+
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> EchoMaterialFinder(
+		TEXT("/Game/EchoLoopMaterial/MAT_EchoCharacter.MAT_EchoCharacter")
+	);
+
+	if (EchoMaterialFinder.Succeeded())
+	{
+		this->EchoMaterial = EchoMaterialFinder.Object;
+	}
 }
 
 void AEchoCharacter::Tick(float DeltaTime)
@@ -46,7 +57,7 @@ void AEchoCharacter::CopyAppearanceFromCharacter(const ACharacter* SourceCharact
 
 	for (int32 idx = 0; idx < SourceMesh->GetNumMaterials(); idx++)
 	{
-		EchoMesh->SetMaterial(idx, SourceMesh->GetMaterial(idx));
+		EchoMesh->SetMaterial(idx, this->EchoMaterial);
 	}
 
 	return;
